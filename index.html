@@ -242,6 +242,24 @@ $.when(
   logoMesh.rotation.x = Math.PI / 2;
   scene.add( logoMesh );
 
+  // river
+  var color = THREE.ImageUtils.loadTexture( 'river/water.jpg' );
+  color.wrapS = color.wrapT = THREE.RepeatWrapping; 
+  color.repeat.set( 5, 5 );
+
+  var river = new THREE.Mesh(
+    new THREE.PlaneGeometry( 160, 20 ),
+    new THREE.MeshLambertMaterial( {
+      map: color,
+      transparent: true, 
+      opacity: 0.5
+    } )
+  );
+  river.rotation.x = -Math.PI / 2;
+  river.position.set( 0, -14.5, 30 );
+  river.renderDepth = 0;
+  scene.add( river );
+
   // skybox
   var stageWidth = 180;
   var urls = [
@@ -282,6 +300,7 @@ $.when(
     new THREE.MeshFaceMaterial( loadedData.mobukoData.materials )
   );
   mobukoMesh.scale.set( .5, .5, .5 );
+  mobukoMesh.renderDepth = 1;
 
   scene.add( mobukoMesh );
   animationController = new THREEFIELD.AnimationController( mobukoMesh );
@@ -317,6 +336,7 @@ $.when(
     THREE.AnimationHandler.update( delta );
 
     logoMesh.rotation.z += delta;
+    river.material.map.offset.x += 0.001;
 
     if ( playerController.object.position.x < -80 ) {
 

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ja" class="no-js">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width">
+<title></title>
+<style>
+body{
+  margin: 0;
+  background: #999;
+}
+
+.gameinput-joystick{
+  position: absolute;
+  left: 100px;
+  bottom: 80px;
+  width: 180px;
+  height: 180px;
+}
+.gameinput-frame{
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events:none;
+  opacity: .5;
+}
+.gameinput-joystick__button{
+  position: absolute;
+  top: 50px;
+  left: 50px;
+  box-sizing: border-box;
+  width: 80px;
+  height: 80px;
+  border-radius: 80px;
+  border: 1px solid #333;
+  background: rgba( 255, 255, 255, .5 );
+}
+</style>
+
+</head>
+<body>
+
+<div class="gameinput-joystick">
+  <div class="gameinput-joystick__button"></div>
+  <svg class="gameinput-frame" width="180" height="180">
+    <circle cx="90" cy="90" r="60" fill="none" stroke="#fff" stroke-width="16"></circle>
+  </svg>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+<script>
+
+var $all = $( '.gameinput-joystick' );
+var $button = $all.find( '.gameinput-joystick__button' );
+var buttonSize = $button.width();
+var position = { x: 0, y: 0 };
+
+var buttondown = function ( e ) {
+  position.x = e.offsetX - buttonSize / 2;
+  position.y = e.offsetY - buttonSize / 2;
+  $button.css( {
+    left: position.x,
+    top: position.y
+  } );
+  console.log( position );
+}
+$all.on( 'mousedown', buttondown );
+
+
+
+</script>
+</body>
+</html>
