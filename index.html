@@ -102,6 +102,7 @@ var $button  = $( '.splash__playbutton' );
 var width, height, clock, scene, camera, renderer;
 var ambientLight, directionalLight, terrain, box;
 var world, groundBody, playerRadius = 1, playerObjectHolder, playerController, animationController;
+var startPosition = new THREE.Vector3( -55, 10, -1 );
 
 world = new THREEFIELD.World();
 
@@ -109,8 +110,8 @@ width = window.innerWidth;
 height = window.innerHeight;
 clock = new THREE.Clock();
 scene = new THREE.Scene();
-// scene.fog = new THREE.FogExp2( 0x000000, 0.02 );
-camera = new THREE.PerspectiveCamera( 40, width / height, 1, 100 );
+scene.fog = new THREE.FogExp2( 0xccccff, 0.01 );
+camera = new THREE.PerspectiveCamera( 40, width / height, 1, 500 );
 camera.position.set( 0, 5, 30 );
 renderer = new THREE.WebGLRenderer();
 renderer.setSize( width, height );
@@ -125,7 +126,7 @@ directionalLight.position.set( 0, 1, 0 );
 scene.add( directionalLight );
 
 playerObjectHolder = new THREE.Object3D();
-playerObjectHolder.position.set( -55, 10, -1 );
+playerObjectHolder.position.copy( startPosition );
 scene.add( playerObjectHolder );
 
 playerController = new THREEFIELD.CharacterController( playerObjectHolder, playerRadius, world );
@@ -241,8 +242,33 @@ $.when(
   logoMesh.rotation.x = Math.PI / 2;
   scene.add( logoMesh );
 
-
-
+  // skybox
+  var stageWidth = 180;
+  var urls = [
+    './skybox/right.jpg',
+    './skybox/left.jpg',
+    './skybox/top.jpg',
+    './skybox/bottom.jpg',
+    './skybox/front.jpg',
+    './skybox/back.jpg'
+  ];
+  var materials = [];
+  for ( var i = 0; i < 6; i ++ ) {
+    materials.push( new THREE.MeshBasicMaterial({
+      map: THREE.ImageUtils.loadTexture( urls[ i ] ),
+      side: THREE.BackSide,
+      fog: false
+    }));
+  }
+  var skyBox = new THREE.Mesh( 
+    new THREE.BoxGeometry(
+      Math.sqrt( Math.pow( stageWidth, 2 ) * 3 ),
+      Math.sqrt( Math.pow( stageWidth, 2 ) * 3 ),
+      Math.sqrt( Math.pow( stageWidth, 2 ) * 3 )
+    ),
+    new THREE.MeshFaceMaterial( materials )
+  );
+  scene.add( skyBox );
 
   // Mobuko-san
   var mobukoMesh;
@@ -313,6 +339,12 @@ $.when(
     if ( playerController.object.position.z >  80 ) {
 
       playerController.object.position.z =  80;
+
+    }
+
+    if ( playerController.object.position.y < -20 ) {
+
+      playerObjectHolder.position.copy( startPosition );
 
     }
 
