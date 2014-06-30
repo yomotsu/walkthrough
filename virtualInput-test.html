@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ja" class="no-js">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width">
+<title></title>
+<style>
+body{
+  margin: 0;
+  background: #999;
+}
+
+.gameinput-joystick{
+  position: absolute;
+}
+.gameinput-frame{
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events:none;
+  opacity: .5;
+}
+.gameinput-joystick__button{
+  cursor: pointer;
+  position: absolute;
+  box-sizing: border-box;
+  border-radius: 50%;
+  border: 1px solid #333;
+  background: rgba( 255, 255, 255, .5 );
+}
+
+.gameinput-button{
+  text-align: center;
+  cursor: pointer;
+  position: absolute;
+  box-sizing: border-box;
+  display: table;
+  border: 1px solid #333;
+  border-radius: 50%;
+  background: rgba( 255, 255, 255, .5 );
+}
+.gameinput-button__inner{
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.gameinput-squareButton{
+  text-align: center;
+  cursor: pointer;
+  position: absolute;
+  box-sizing: border-box;
+  display: table;
+  border: 1px solid #333;
+  border-radius: 3px;
+  background: rgba( 255, 255, 255, .5 );
+}
+.gameinput-squareButton__inner{
+  display: table-cell;
+  vertical-align: middle;
+}
+</style>
+
+</head>
+<body>
+
+<script src="lib/three.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+<script src="./lib/virtualInput.js"></script>
+<script>
+
+virtualInput.SquareButton = function ( $container, width, height, params ) {
+
+  THREE.EventDispatcher.prototype.apply( this );
+
+  this.isHeld = false;
+  var that = this;
+  var label = params.label;
+  var template = [
+    '<div class="gameinput-squareButton">',
+      '<div class="gameinput-squareButton__inner">',
+        label,
+      '</div>',
+    '</div>'
+  ].join( '' );
+  var $button = $( template );
+  $container.append( $button );
+  $button.css( {
+    width: width,
+    height: height,
+    right: params.right,
+    bottom: params.bottom,
+  } );
+
+  $button.on( 'mousedown', function () {
+
+    that.isHeld = true;
+    that.dispatchEvent( { type: 'press' } );
+
+  } );
+
+  $button.on( 'mouseleave', function () {
+
+    that.isHeld = false;
+
+  } );
+
+  $button.on( 'mouseup', function () {
+
+    that.isHeld = false;
+
+  } );
+  
+};
+
+
+var joystick1 = new virtualInput.Joystick( $( document.body ), 120, { left: 50, bottom: 40 } );
+var joystick2 = new virtualInput.Joystick( $( document.body ), 120, { right: 20, bottom: 180 } );
+var button = new virtualInput.Button( $( document.body ), 70, { right: 75, bottom: 90, label: 'jump' } );
+var lButton = new virtualInput.SquareButton( $( document.body ), 80, 40, { right: 20, bottom: 180, label: '→' } );
+var rButton = new virtualInput.SquareButton( $( document.body ), 80, 40, { right: 120, bottom: 180, label: '←' } );
+
+// joystick.angle
+
+button.addEventListener( 'press', function () { console.log( 222 );} );
+lButton.addEventListener( 'press', function () { console.log( 222 );} );
+rButton.addEventListener( 'press', function () { console.log( 222 );} );
+
+
+</script>
+</body>
+</html>

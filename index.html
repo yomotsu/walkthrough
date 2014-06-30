@@ -63,6 +63,51 @@ canvas{
   background: #536270;
   display: none;
 }
+
+
+.gameinput-joystick{
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+  position: absolute;
+  left: 50px;
+  bottom: 40px;
+}
+.gameinput-frame{
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events:none;
+  opacity: .5;
+}
+.gameinput-joystick__button{
+  cursor: pointer;
+  position: absolute;
+  box-sizing: border-box;
+  border-radius: 50%;
+  border: 1px solid #333;
+  background: rgba( 255, 255, 255, .5 );
+}
+
+.gameinput-button{
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+  text-align: center;
+  cursor: pointer;
+  position: absolute;
+  box-sizing: border-box;
+  display: table;
+  border: 1px solid #333;
+  border-radius: 50%;
+  background: rgba( 255, 255, 255, .5 );
+}
+.gameinput-button__inner{
+  display: table-cell;
+  vertical-align: middle;
+}
 </style>
 </head>
 <body>
@@ -76,10 +121,10 @@ canvas{
 
 <script src="./lib/three.min.js"></script>
 <script src="./lib/threefield.min.js"></script>
-
-<!-- for only to use $.Deferred -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+<script src="./lib/virtualInput.js"></script>
 <script>
+
 var loadMesh = function ( url ) {
 
   var d = new $.Deferred(),
@@ -98,6 +143,10 @@ var loadMesh = function ( url ) {
 var $splash  = $( '.splash' );
 var $spinner = $( '.splash__spinner' );
 var $button  = $( '.splash__playbutton' );
+
+var joystick1 = new virtualInput.Joystick( $( document.body ), 120, { left:  50, bottom: 30 } );
+var joystick2 = new virtualInput.Joystick( $( document.body ), 120, { right: 50, bottom: 30 } );
+var jumpButton = new virtualInput.Button( $( document.body ), 70, { right: 134, bottom: 240, label: 'jump' } );
 
 var width, height, clock, scene, camera, renderer;
 var ambientLight, directionalLight, terrain, box;
@@ -134,14 +183,17 @@ playerController.movementSpeed = 10;
 
 var keyInputControl = new THREEFIELD.KeyInputControl();
 
-keyInputControl.addEventListener( 'movekeyhold', function () { playerController.isWalking = true; } );
-keyInputControl.addEventListener( 'movekeyrelease',   function () { playerController.isWalking = false; } );
-keyInputControl.addEventListener( 'jumpkeypress', function () { playerController.jump(); } );
+keyInputControl.addEventListener( 'movekeyhold',    function () { playerController.isWalking = true; } );
+keyInputControl.addEventListener( 'movekeyrelease', function () { playerController.isWalking = false; } );
+keyInputControl.addEventListener( 'jumpkeypress',   function () { playerController.jump(); } );
 
 playerController.addEventListener( 'startIdling',  function () { animationController.play( 'idle' ); } );
 playerController.addEventListener( 'startWalking', function () { animationController.play( 'run' ); } );
 playerController.addEventListener( 'startJumping', function () { animationController.play( 'jump' ); } );
 
+joystick1.addEventListener( 'active',    function () { playerController.isWalking = true; } );
+joystick1.addEventListener( 'disactive', function () { playerController.isWalking = false;} );
+jumpButton.addEventListener( 'press', function () { playerController.jump(); } );
 
 var gyroscopeCameraControl = new THREEFIELD.GyroscopeCameraControl(
   camera,
@@ -321,6 +373,13 @@ $.when(
     var delta = clock.getDelta();
     var cameraFrontAngle = gyroscopeCameraControl.getFrontAngle();
     var characterFrontAngle = keyInputControl.getFrontAngle();
+    
+    if ( joystick1.isActive ) {
+
+      characterFrontAngle = joystick1.angle * 180 / Math.PI - 90;
+
+    }
+
     playerController.frontAngle = ( 360 - cameraFrontAngle ) + characterFrontAngle % 360;
     // since nested objects are cause IE11 slow, just copy position
     animationController.mesh.position.set(
@@ -328,6 +387,7 @@ $.when(
       playerObjectHolder.position.y - playerRadius,
       playerObjectHolder.position.z
     );
+
     animationController.mesh.rotation.y = THREE.Math.degToRad( ( 360 - cameraFrontAngle ) + characterFrontAngle % 360 ) + Math.PI;
     gyroscopeCameraControl.update();
 
@@ -368,6 +428,13 @@ $.when(
 
     }
 
+    if ( joystick2.isActive ) {
+
+        gyroscopeCameraControl.lon -= joystick2.position.x;
+        gyroscopeCameraControl.lat -= joystick2.position.y * .5;
+
+    }
+
   } )();
 
 } );
@@ -381,6 +448,13 @@ $( window ).on( 'resize', function onresize () {
   camera.updateProjectionMatrix();
 
 } );
+
+$( window ).on( 'contextmenu', function ( e ) {
+
+  e.preventDefault();
+
+} );
+
 
 
 </script>
