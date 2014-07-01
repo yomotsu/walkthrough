@@ -41,14 +41,19 @@ canvas{
   text-align: center;
 }
 .splash__instruction{
-  display: table;
   margin: 20px auto;
-  border-radius: 6px;
-  background: rgba( 0, 0, 0, .3 );
 }
 .splash__instruction img{
+  vertical-align: middle;
+  box-sizing: border-box;
   display: block;
-  margin: 10px 20px;
+  width: 100%;
+  max-width:880px;
+  height: auto;
+  padding: 10px;
+  margin: auto;
+  border-radius: 6px;
+  background: rgba( 0, 0, 0, .3 );
 }
 .splash__spinner{
   display: block;
@@ -123,7 +128,9 @@ canvas{
 
 <div class="splash">
   <div class="splash__text">walk and explore into 3D world!</div>
-  <div class="splash__instruction"><img src="img/img_01.png" alt="" height="160" width="600"></div>
+  <div class="splash__instruction">
+    <img src="img/img_01.png" alt="" width="880" height="180">
+  </div>
   <div class="splash__spinner">It takes some time to load</div>
   <div class="splash__playbutton">Play</div>
 </div>
