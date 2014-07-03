@@ -532,7 +532,7 @@ $.when(
     if ( joystick2.isActive ) {
 
         gyroscopeCameraControl.lon -= joystick2.position.x;
-        gyroscopeCameraControl.lat -= joystick2.position.y * .5;
+        gyroscopeCameraControl.lat += joystick2.position.y * .5;
 
     }
 
