@@ -219,6 +219,7 @@ canvas{
 
 <script src="./lib/three.min.js"></script>
 <script src="./lib/threefield.min.js"></script>
+<script src="./lib/threex.grass.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
 <script src="./lib/virtualInput.js"></script>
 <script>
@@ -315,11 +316,11 @@ var gyroscopeCameraControl = new THREEFIELD.GyroscopeCameraControl(
 
 
 $.when(
-  loadMesh( './terrain2/terrain1.js' ),
-  loadMesh( './terrain2/terrain2.js' ),
-  loadMesh( './terrain2/terrain3.js' ),
-  loadMesh( './terrain2/BridgeChina.js' ),
-  loadMesh( './terrain2/webgl-ie.js' ),
+  loadMesh( './terrain/terrain1.js' ),
+  loadMesh( './terrain/terrain2.js' ),
+  loadMesh( './terrain/terrain3.js' ),
+  loadMesh( './terrain/BridgeChina.js' ),
+  loadMesh( './terrain/webgl-ie.js' ),
   loadMesh( './mobuko/mobuko.js' )
 ).then( function ( terrainData1, terrainData2, terrainData3, bridgeData, logoData, mobukoData ) {
 
@@ -415,6 +416,40 @@ $.when(
   river.position.set( 0, -14.5, 30 );
   river.renderDepth = 0;
   scene.add( river );
+
+  // grasses
+  var grasses,
+      grassesPositions = [],
+      max1 = new THREE.Vector2( -20,   8 ),
+      min1 = new THREE.Vector2( -40, -80 ),
+      max2 = new THREE.Vector2( -40, -30 ),
+      min2 = new THREE.Vector2( -80, -80 );
+
+  for ( var i = 0; i < 300; i ++ ) {
+
+    grassesPositions[ i ] = new THREE.Vector3(
+      Math.random() * Math.sqrt( Math.pow( ( max1.x - min1.x ), 2 ) ) + min1.x,
+      0,
+      Math.random() * Math.sqrt( Math.pow( ( max1.y - min1.y ), 2 ) ) + min1.y
+    );
+
+  }
+
+  for ( var i = 0; i < 100; i ++ ) {
+
+    grassesPositions[ i ] = new THREE.Vector3(
+      Math.random() * Math.sqrt( Math.pow( ( max2.x - min2.x ), 2 ) ) + min2.x,
+      0,
+      Math.random() * Math.sqrt( Math.pow( ( max2.y - min2.y ), 2 ) ) + min2.y
+    );
+
+  }
+
+  grasses = new THREEx.createGrassTufts(
+    grassesPositions,
+    './terrain/grass01.png'
+  );
+  scene.add( grasses );
 
   // skybox
   var stageWidth = 180;
