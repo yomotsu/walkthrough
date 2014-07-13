@@ -272,11 +272,11 @@ renderer.setSize( width, height );
 // renderer.setClearColor( 0xccccff );
 document.body.appendChild( renderer.domElement );
 
-ambientLight = new THREE.AmbientLight( 0xffffff );
+ambientLight = new THREE.AmbientLight( 0xeeeeee );
 scene.add( ambientLight );
 
 directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
-directionalLight.position.set( 0, 1, 0 );
+directionalLight.position.set( 0, 1, 1 ).normalize();
 scene.add( directionalLight );
 
 playerObjectHolder = new THREE.Object3D();
