@@ -219,6 +219,7 @@ canvas{
 
 <script src="./lib/three.min.js"></script>
 <script src="./lib/threefield.min.js"></script>
+<script src="./lib/threefield.TPS.min.js"></script>
 <script src="./lib/threex.grass.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
 <script src="./lib/virtualInput.js"></script>
@@ -360,7 +361,7 @@ $.when(
 
   var terrainMesh2 = new THREE.Mesh(
     loadedData.terrainData2.geometry,
-    // new THREE.MeshNormalMaterial()
+    // new THREE.MeshNormalMaterial( {wireframe: true} )
     new THREE.MeshFaceMaterial( loadedData.terrainData2.materials )
   );
   terrainMesh2.scale.set( 8, 8, 8 );
@@ -537,31 +538,31 @@ $.when(
     logoMesh.rotation.z += delta;
     river.material.map.offset.x += 0.001;
 
-    if ( playerController.object.position.x < -80 ) {
+    if ( playerController.position.x < -80 ) {
 
-      playerController.object.position.x = -80;
-
-    }
-
-    if ( playerController.object.position.x >  80 ) {
-
-      playerController.object.position.x =  80;
+      playerController.position.x = -80;
 
     }
 
-    if ( playerController.object.position.z < -80 ) {
+    if ( playerController.position.x >  80 ) {
 
-      playerController.object.position.z = -80;
-
-    }
-
-    if ( playerController.object.position.z >  80 ) {
-
-      playerController.object.position.z =  80;
+      playerController.position.x =  80;
 
     }
 
-    if ( playerController.object.position.y < -20 ) {
+    if ( playerController.position.z < -80 ) {
+
+      playerController.position.z = -80;
+
+    }
+
+    if ( playerController.position.z >  80 ) {
+
+      playerController.position.z =  80;
+
+    }
+
+    if ( playerController.position.y < -20 ) {
 
       playerObjectHolder.position.copy( startPosition );
 
