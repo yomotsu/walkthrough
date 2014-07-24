@@ -242,8 +242,8 @@ var loadMesh = function ( url ) {
 };
 
 var isMobile = ( function () {
-  
-  var ua = navigator.userAgent;
+
+  var ua = navigator.userAgent,
       apple_phone      = /iPhone/i,
       apple_ipod       = /iPod/i,
       apple_tablet     = /iPad/i,
@@ -253,20 +253,20 @@ var isMobile = ( function () {
       windows_tablet   = /(?=.*\bWindows\b)(?=.*\bARM\b)/i, // Match 'Windows' AND 'ARM'
       other_blackberry = /BlackBerry/i,
       other_opera      = /Opera Mini/i,
-      other_firefox    = /(?=.*\bFirefox\b)(?=.*\bMobile\b)/i, // Match 'Firefox' AND 'Mobile'
+      other_firefox    = /(?=.*\bFirefox\b)(?=.*\bMobile\b)/i; // Match 'Firefox' AND 'Mobile'
 
   if (
-    ua.test( apple_phone )      ||
-    ua.test( apple_phone )      ||
-    ua.test( apple_ipod )       ||
-    ua.test( apple_tablet )     ||
-    ua.test( android_phone )    ||
-    ua.test( android_tablet )   ||
-    ua.test( windows_phone )    ||
-    ua.test( windows_tablet )   ||
-    ua.test( other_blackberry ) ||
-    ua.test( other_opera )      ||
-    ua.test( other_firefox )
+    apple_phone.test( ua )      ||
+    apple_phone.test( ua )      ||
+    apple_ipod.test( ua )       ||
+    apple_tablet.test( ua )     ||
+    android_phone.test( ua )    ||
+    android_tablet.test( ua )   ||
+    windows_phone.test( ua )    ||
+    windows_tablet.test( ua )   ||
+    other_blackberry.test( ua ) ||
+    other_opera.test( ua )      ||
+    other_firefox.test( ua )
   ) {
 
     return true;
