@@ -8,6 +8,7 @@
 body{
   font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
   margin: 0;
+  height: 100%;
   background: #59C8B2;
 }
 canvas{
@@ -240,6 +241,44 @@ var loadMesh = function ( url ) {
 
 };
 
+var isMobile = ( function () {
+  
+  var ua = navigator.userAgent;
+      apple_phone      = /iPhone/i,
+      apple_ipod       = /iPod/i,
+      apple_tablet     = /iPad/i,
+      android_phone    = /(?=.*\bAndroid\b)(?=.*\bMobile\b)/i, // Match 'Android' AND 'Mobile'
+      android_tablet   = /Android/i,
+      windows_phone    = /IEMobile/i,
+      windows_tablet   = /(?=.*\bWindows\b)(?=.*\bARM\b)/i, // Match 'Windows' AND 'ARM'
+      other_blackberry = /BlackBerry/i,
+      other_opera      = /Opera Mini/i,
+      other_firefox    = /(?=.*\bFirefox\b)(?=.*\bMobile\b)/i, // Match 'Firefox' AND 'Mobile'
+
+  if (
+    ua.test( apple_phone )      ||
+    ua.test( apple_phone )      ||
+    ua.test( apple_ipod )       ||
+    ua.test( apple_tablet )     ||
+    ua.test( android_phone )    ||
+    ua.test( android_tablet )   ||
+    ua.test( windows_phone )    ||
+    ua.test( windows_tablet )   ||
+    ua.test( other_blackberry ) ||
+    ua.test( other_opera )      ||
+    ua.test( other_firefox )
+  ) {
+
+    return true;
+
+  } else {
+
+    return false;
+
+  }
+
+} )();
+
 var $splash  = $( '.splash' );
 var $spinner = $( '.splash__spinner' );
 var $button  = $( '.splash__playbutton' );
@@ -254,7 +293,7 @@ var joystick1 = new virtualInput.Joystick( $( document.body ), 120, { left:  50,
 var joystick2 = new virtualInput.Joystick( $( document.body ), 120, { right: 50, bottom: 30 } );
 var jumpButton = new virtualInput.Button( $( document.body ), 70, { right: 134, bottom: 240, label: buttonSvgSrc } );
 
-var width, height, clock, scene, camera, renderer;
+var width, height, renderQuality, clock, scene, camera, renderer;
 var ambientLight, directionalLight, terrain, box;
 var world, groundBody, playerRadius = 1, playerObjectHolder, playerController, animationController;
 var startPosition = new THREE.Vector3( -55, 10, -1 );
@@ -263,15 +302,19 @@ world = new THREEFIELD.World();
 
 width = window.innerWidth;
 height = window.innerHeight;
+renderQuality = !isMobile ? 1 : 1 / 2;
 clock = new THREE.Clock();
 scene = new THREE.Scene();
 scene.fog = new THREE.FogExp2( 0xccccff, 0.01 );
 camera = new THREE.PerspectiveCamera( 40, width / height, 1, 500 );
 camera.position.set( 0, 5, 30 );
 renderer = new THREE.WebGLRenderer();
-renderer.setSize( width, height );
+renderer.setSize( Math.floor( width * renderQuality ), Math.floor( height * renderQuality ) );
+renderer.setViewport( 0, 0, Math.floor( width * renderQuality ), Math.floor( height * renderQuality ) );
 // renderer.setClearColor( 0xccccff );
 document.body.appendChild( renderer.domElement );
+renderer.domElement.style.width  = width  + 'px';
+renderer.domElement.style.height = height + 'px';
 
 ambientLight = new THREE.AmbientLight( 0xeeeeee );
 scene.add( ambientLight );
@@ -581,9 +624,10 @@ $.when(
 
 $( window ).on( 'resize', function onresize () {
 
-  width = window.innerWidth,
+  width  = window.innerWidth;
   height = window.innerHeight;
   renderer.setSize( width, height );
+  renderer.setViewport( 0, 0, width * renderQuality, height * renderQuality );
   camera.aspect = width / height;
   camera.updateProjectionMatrix();
 
