@@ -93,8 +93,16 @@ canvas{
       -ms-user-select: none;
           user-select: none;
   position: absolute;
-  left: 50px;
-  bottom: 40px;
+  bottom: 30px;
+}
+#joystick1{left: 50px;}
+#joystick2{right: 50px;}
+@media ( max-width: 768px ) {
+  .gameinput-joystick{
+    bottom:0px;
+  }
+  #joystick1{left: 0px;}
+  #joystick2{right: 0px;}
 }
 .gameinput-frame{
   position: absolute;
@@ -127,6 +135,16 @@ canvas{
   border: 1px solid #333;
   border-radius: 50%;
   background: rgba( 255, 255, 255, .5 );
+}
+#jumpButton{
+  right: 134px;
+  bottom: 240px;
+}
+@media ( max-width: 768px ) {
+  #jumpButton{
+    right: 60px;
+    bottom: 200px;
+  } 
 }
 .gameinput-button__inner{
   display: table-cell;
@@ -273,7 +291,7 @@ var isMobile = ( function () {
 
   } else {
 
-    return true;
+    return false;
 
   }
 
@@ -289,9 +307,9 @@ var buttonSvgSrc = [
   '</svg>'
 ].join('');
 
-var joystick1 = new virtualInput.Joystick( $( document.body ), 120, { left:  50, bottom: 30 } );
-var joystick2 = new virtualInput.Joystick( $( document.body ), 120, { right: 50, bottom: 30 } );
-var jumpButton = new virtualInput.Button( $( document.body ), 70, { right: 134, bottom: 240, label: buttonSvgSrc } );
+var joystick1 = new virtualInput.Joystick( $( document.body ), 120, { id: 'joystick1' } );
+var joystick2 = new virtualInput.Joystick( $( document.body ), 120, { id: 'joystick2' } );
+var jumpButton = new virtualInput.Button( $( document.body ), 70, { id: 'jumpButton', label: buttonSvgSrc } );
 
 var width, height, renderQuality, clock, scene, camera, renderer;
 var ambientLight, directionalLight, terrain, box;
