@@ -273,7 +273,7 @@ var isMobile = ( function () {
 
   } else {
 
-    return false;
+    return true;
 
   }
 
@@ -311,7 +311,6 @@ camera.position.set( 0, 5, 30 );
 renderer = new THREE.WebGLRenderer();
 renderer.setSize( Math.floor( width * renderQuality ), Math.floor( height * renderQuality ) );
 renderer.setViewport( 0, 0, Math.floor( width * renderQuality ), Math.floor( height * renderQuality ) );
-// renderer.setClearColor( 0xccccff );
 document.body.appendChild( renderer.domElement );
 renderer.domElement.style.width  = width  + 'px';
 renderer.domElement.style.height = height + 'px';
@@ -626,8 +625,11 @@ $( window ).on( 'resize', function onresize () {
 
   width  = window.innerWidth;
   height = window.innerHeight;
-  renderer.setSize( width, height );
-  renderer.setViewport( 0, 0, width * renderQuality, height * renderQuality );
+  renderer.setSize( Math.floor( width * renderQuality ), Math.floor( height * renderQuality ) );
+  renderer.setViewport( 0, 0, Math.floor( width * renderQuality ), Math.floor( height * renderQuality ) );
+  document.body.appendChild( renderer.domElement );
+  renderer.domElement.style.width  = width  + 'px';
+  renderer.domElement.style.height = height + 'px';
   camera.aspect = width / height;
   camera.updateProjectionMatrix();
 
