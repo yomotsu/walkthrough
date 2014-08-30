@@ -235,10 +235,11 @@ canvas{
   </div>
 </div>
 
+<div id="viewport"></div>
 
 <script src="./lib/three.min.js"></script>
 <script src="./lib/threefield.min.js"></script>
-<script src="./lib/threefield.TPS.min.js"></script>
+<script src="./lib/threefield.TPS.js"></script>
 <script src="./lib/threex.grass.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
 <script src="./lib/virtualInput.js"></script>
@@ -320,18 +321,20 @@ world = new THREEFIELD.World();
 
 width = window.innerWidth;
 height = window.innerHeight;
-renderQuality = !isMobile ? 1 : 1 / 2;
 clock = new THREE.Clock();
 scene = new THREE.Scene();
 scene.fog = new THREE.FogExp2( 0xccccff, 0.01 );
-camera = new THREE.PerspectiveCamera( 40, width / height, 1, 500 );
+camera = new THREE.PerspectiveCamera( 40, width / height, .1, 500 );
 camera.position.set( 0, 5, 30 );
-renderer = new THREE.WebGLRenderer();
-renderer.setSize( Math.floor( width * renderQuality ), Math.floor( height * renderQuality ) );
-renderer.setViewport( 0, 0, Math.floor( width * renderQuality ), Math.floor( height * renderQuality ) );
-document.body.appendChild( renderer.domElement );
-renderer.domElement.style.width  = width  + 'px';
-renderer.domElement.style.height = height + 'px';
+renderer = new THREE.WebGLRenderer( {
+  precision: !isMobile ? 'highp' : 'lowp',
+  antialias: !isMobile ? true : false,
+  stencil: false,
+  maxLights: !isMobile ? 4 : 2
+} );
+renderer.devicePixelRatio = !isMobile ? 1 : .5;
+renderer.setSize( width, height );
+document.getElementById( 'viewport' ).appendChild( renderer.domElement );
 
 ambientLight = new THREE.AmbientLight( 0xeeeeee );
 scene.add( ambientLight );
@@ -361,7 +364,7 @@ joystick1.addEventListener( 'active',    function () { playerController.isWalkin
 joystick1.addEventListener( 'disactive', function () { playerController.isWalking = false;} );
 jumpButton.addEventListener( 'press', function () { playerController.jump(); } );
 
-var gyroscopeCameraControl = new THREEFIELD.GyroscopeCameraControl(
+var tpsCameraControl = new THREEFIELD.TPSCameraControl(
   camera,
   playerObjectHolder,
   {
@@ -417,7 +420,7 @@ $.when(
   terrainMesh1.scale.set( 8, 8, 8 );
   scene.add( terrainMesh1 );
   world.add( new THREEFIELD.Collider( terrainMesh1 ) );
-  gyroscopeCameraControl.rigidObjects.push( terrainMesh1 );
+  tpsCameraControl.rigidObjects.push( terrainMesh1 );
 
   var terrainMesh2 = new THREE.Mesh(
     loadedData.terrainData2.geometry,
@@ -427,7 +430,7 @@ $.when(
   terrainMesh2.scale.set( 8, 8, 8 );
   scene.add( terrainMesh2 );
   world.add( new THREEFIELD.Collider( terrainMesh2 ) );
-  gyroscopeCameraControl.rigidObjects.push( terrainMesh2 );
+  tpsCameraControl.rigidObjects.push( terrainMesh2 );
 
   var terrainMesh3 = new THREE.Mesh(
     loadedData.terrainData3.geometry,
@@ -437,7 +440,7 @@ $.when(
   terrainMesh3.scale.set( 8, 8, 8 );
   scene.add( terrainMesh3 );
   world.add( new THREEFIELD.Collider( terrainMesh3 ) );
-  gyroscopeCameraControl.rigidObjects.push( terrainMesh3 );
+  tpsCameraControl.rigidObjects.push( terrainMesh3 );
 
   var bridgeMesh = new THREE.Mesh(
     loadedData.bridgeData.geometry,
@@ -448,7 +451,7 @@ $.when(
   bridgeMesh.scale.set( 6, 6, 6 );
   scene.add( bridgeMesh );
   world.add( new THREEFIELD.Collider( bridgeMesh ) );
-  gyroscopeCameraControl.rigidObjects.push( bridgeMesh );
+  tpsCameraControl.rigidObjects.push( bridgeMesh );
 
   var logoMesh = new THREE.Mesh(
     loadedData.logoData.geometry,
@@ -571,7 +574,7 @@ $.when(
     requestAnimationFrame( update );
 
     var delta = clock.getDelta();
-    var cameraFrontAngle = gyroscopeCameraControl.getFrontAngle();
+    var cameraFrontAngle = tpsCameraControl.getFrontAngle();
     var characterFrontAngle = keyInputControl.getFrontAngle();
     
     if ( joystick1.isActive ) {
@@ -589,7 +592,7 @@ $.when(
     );
 
     animationController.mesh.rotation.y = THREE.Math.degToRad( ( 360 - cameraFrontAngle ) + characterFrontAngle % 360 ) + Math.PI;
-    gyroscopeCameraControl.update();
+    tpsCameraControl.update();
 
     world.step( delta );
     renderer.render( scene, camera );
@@ -602,11 +605,9 @@ $.when(
 
       playerController.position.x = -80;
 
-    }
+    } else if ( playerController.position.x >  80 ) {
 
-    if ( playerController.position.x >  80 ) {
-
-      playerController.position.x =  80;
+      playerController.position.x = 80;
 
     }
 
@@ -614,11 +615,9 @@ $.when(
 
       playerController.position.z = -80;
 
-    }
+    } else if ( playerController.position.z >  80 ) {
 
-    if ( playerController.position.z >  80 ) {
-
-      playerController.position.z =  80;
+      playerController.position.z = 80;
 
     }
 
@@ -630,8 +629,10 @@ $.when(
 
     if ( joystick2.isActive ) {
 
-        gyroscopeCameraControl.lon -= joystick2.position.x;
-        gyroscopeCameraControl.lat += joystick2.position.y * .5;
+      tpsCameraControl.setLatLon(
+        tpsCameraControl.lat + joystick2.position.y * .5,
+        tpsCameraControl.lon - joystick2.position.x
+      );
 
     }
 
@@ -643,13 +644,11 @@ $( window ).on( 'resize', function onresize () {
 
   width  = window.innerWidth;
   height = window.innerHeight;
-  renderer.setSize( Math.floor( width * renderQuality ), Math.floor( height * renderQuality ) );
-  renderer.setViewport( 0, 0, Math.floor( width * renderQuality ), Math.floor( height * renderQuality ) );
+  renderer.setSize( width, height );
   document.body.appendChild( renderer.domElement );
-  renderer.domElement.style.width  = width  + 'px';
-  renderer.domElement.style.height = height + 'px';
   camera.aspect = width / height;
   camera.updateProjectionMatrix();
+  tpsCameraControl.setNearPlainCorners();
 
 } );
 
